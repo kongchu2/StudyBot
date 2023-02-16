@@ -54,7 +54,12 @@ class Program
             else
             {
                 _repository.AddAttandance(new Attandance(DateTime.Now, command.User.Id));
-                await command.RespondAsync($"{command.User.Username}님 반가워요!\n현재 연속 출석체크 {_repository.GetAttandanceStreak(command.User.Id)}번! \n총 출석체크 {attList.Count()+1}번 하셨어요!");
+                int count;
+                if(attList.Count == 0)
+                    count = 1;
+                else
+                    count = attList.Count;
+                await command.RespondAsync($"{command.User.Username}님 반가워요!\n현재 연속 출석체크 {_repository.GetAttandanceStreak(command.User.Id)}번! \n총 출석체크 {count}번 하셨어요!");
             }
         }
     }
@@ -74,24 +79,25 @@ class Program
     {
         Console.WriteLine(log.ToString());
         return Task.CompletedTask;
-    }
+    }   
 
     private async Task Ready()
     {
         Console.WriteLine($"{_client.CurrentUser} 연결됨!");
+
+        _client.GetGlobalApplicationCommandsAsync().Result.ToList().ForEach(x => x.DeleteAsync().Wait());
 
         var guild = _client.GetGuild(_guildId);
 
         var attandanceCommandBuilder = new SlashCommandBuilder();
         attandanceCommandBuilder.WithName("출석체크");
         attandanceCommandBuilder.WithDescription("하루에 한 번, 출석체크를 진행할 수 있어요!");
+        
+        await guild.CreateApplicationCommandAsync(attandanceCommandBuilder.Build());
 
         //var TimerCommandBuilder = new SlashCommandBuilder()
         //.WithName("타이머")
         //.WithDescription("설정한 시간 뒤에 메시지를 보내드릴게요!");
-
-
-        await guild.CreateApplicationCommandAsync(attandanceCommandBuilder.Build());
     }
 }
 class Attandance
