@@ -10,5 +10,8 @@
   <ItemGroup>
     <PackageReference Include="Discord.Net" Version="3.9.0" />
   </ItemGroup>
+  <ItemGroup>
+    <Folder Include="src\*" />
+  </ItemGroup>
 
 </Project>
